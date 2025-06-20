@@ -10,7 +10,7 @@
     "rollup": "rollup -c --bundleConfigAsCjs"
   },
   "author": "fizzycoding",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.6",
     "@rollup/plugin-node-resolve": "^16.0.1",
