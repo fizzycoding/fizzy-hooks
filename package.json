@@ -1,6 +1,6 @@
 {
   "name": "fizzy-hooks",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Custom react hook ",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
