@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 /**
  * useSessionStorage Hook
@@ -7,13 +7,14 @@ import { useState, useEffect } from "react";
  *
  * @param key - The key to store the value under
  * @param initialValue - The default value if sessionStorage is empty
- * @returns [value, setValue]
+ * @returns [value, setValue, removeValue]
  */
 function useSessionStorage<T>(
   key: string,
   initialValue: T
-): [T, (value: T) => void] {
+): [T, (value: T | ((val: T) => T)) => void, () => void] {
   const [storedValue, setStoredValue] = useState<T>(() => {
+    if (typeof window === "undefined") return initialValue;
     try {
       const item = window.sessionStorage.getItem(key);
       return item ? JSON.parse(item) : initialValue;
@@ -23,17 +24,28 @@ function useSessionStorage<T>(
     }
   });
 
-  const setValue = (value: T) => {
+  const setValue = (value: T | ((val: T) => T)) => {
     try {
-      setStoredValue(value);
-      window.sessionStorage.setItem(key, JSON.stringify(value));
+      const valueToStore = value instanceof Function ? value(storedValue) : value;
+      setStoredValue(valueToStore);
+      window.sessionStorage.setItem(key, JSON.stringify(valueToStore));
     } catch (error) {
       console.warn("useSessionStorage write error", error);
     }
   };
 
+  const removeValue = () => {
+    try {
+      window.sessionStorage.removeItem(key);
+      setStoredValue(initialValue);
+    } catch (error) {
+      console.warn("useSessionStorage remove error", error);
+    }
+  };
+
   useEffect(() => {
     const handleStorageChange = () => {
+      if (typeof window === "undefined") return;
       try {
         const item = window.sessionStorage.getItem(key);
         setStoredValue(item ? JSON.parse(item) : initialValue);
@@ -46,7 +58,7 @@ function useSessionStorage<T>(
     return () => window.removeEventListener("storage", handleStorageChange);
   }, [key, initialValue]);
 
-  return [storedValue, setValue];
+  return [storedValue, setValue, removeValue];
 }
 
 export default useSessionStorage;
