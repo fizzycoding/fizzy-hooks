@@ -29,6 +29,7 @@ function useFetch<T = any>(
   });
 
   const fetchData = useCallback(async () => {
+    setState((prev) => ({ ...prev, loading: true, error: null }));
     try {
       const res = await fetch(url, options);
       if (!res.ok) throw new Error(`Error ${res.status}: ${res.statusText}`);

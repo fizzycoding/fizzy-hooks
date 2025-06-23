@@ -37,7 +37,6 @@ function useAsync<T, Args extends any[]>(
 
   const run = useCallback(async (...args: Args) => {
     setState((prev) => ({ ...prev, error: null, loading: true }));
-
     try {
       const result = await asyncFn(...args);
       if (!mountedRef.current) return;
